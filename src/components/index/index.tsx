@@ -1,11 +1,8 @@
-import "./globals.css";
-
-import Comenzar from "../components/index/buttons/Comenzar";
-import Register from "../components/index/buttons/Register";
-import SignIn from "../components/index/buttons/SignIn";
-import HeaderCoin from "../components/index/HeaderCoin";
-import Gallery from "../components/index/Gallery";
-import Footer from "../components/index/Footer";
+import Comenzar from "./buttons/Comenzar";
+import Register from "./buttons/Register";
+import SignIn from "./buttons/SignIn";
+import HeaderCoin from "../../../../layouts/index/HeaderCoin";
+import Gallery from "./Gallery";
 
 function Index() {
   return (
@@ -73,7 +70,6 @@ function Index() {
           <img className="w-12" src="/interrogacion.png" alt="interrogacion" />
         </div>
       </section>
-      <Footer />
     </>
   );
 }
