@@ -1,7 +1,5 @@
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
-import ModalSequence from "../signin/components/modals/ModalSequence";
-import ModalTreidis from "../signin/components/modals/ModalTreidis";
-import ModalNotificaciones from "../signin/components/modals/ModalNotificaciones";
+import ModalSequence from "./components/modals/ModalSequence";
 import { useEffect, useState } from "react";
 
 export default function Page() {
@@ -14,19 +12,36 @@ export default function Page() {
   const handleBack = () => {
     setCurrentModal((prevModal) => prevModal - 1);
   };
-  useEffect(() => {
-    fetch("http://localhost:4000/register/get", {
+
+  const fetchData = async () => {
+    await fetch("http://localhost:4000/register/get", {
       credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
         setUserData(data);
+        console.log(data);
       })
       .catch((error) => console.error(error));
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
   if (!userData) {
-    return <div>Cargando...</div>;
+    return (
+      <div className="h-[100vh] w-[100vw] flex justify-center items-center flex-col">
+        <div>
+          <img src="/logo.png" alt="" />
+        </div>
+        <div className="p-4 rounded-md border-2 border-emerald-300">
+          <h1 className="font-bold text-2xl text-green-500">
+            Espere un momento estamos creando el perfil...
+          </h1>
+        </div>
+      </div>
+    );
   }
   const { user, guide, idGuide } = userData;
   const { id, fullName, email } = user;

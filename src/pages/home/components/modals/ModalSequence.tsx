@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Footer from "@/components/index/Footer";
 import HeaderCoin from "@/components/index/HeaderCoin";
 import Gallery from "@/components/index/Gallery";
@@ -11,6 +11,8 @@ import "../../../../app/globals.css";
 import ModalNotificaciones from "./ModalNotificaciones";
 import ModalTreidis from "./ModalTreidis";
 import ModalBuscador from "./ModalBuscador";
+import ModalAgregarProducto from "./ModalAgregarProducto";
+import ModalBienvenidoATreidi from "./ModalBienvenidoATreidi";
 
 interface User {
   id: number;
@@ -25,7 +27,19 @@ interface User {
 
 function ModalSequence({ user }: { user: User }) {
   const [currentModal, setCurrentModal] = useState(0);
-  const modals = [ModalNotificaciones, ModalTreidis, ModalBuscador];
+  const modals = [
+    ModalNotificaciones,
+    ModalTreidis,
+    ModalBuscador,
+    ModalAgregarProducto,
+    ModalBienvenidoATreidi,
+  ];
+
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
+
+  const notificationsDropdownRef = useRef(null);
+  const accountDropdownRef = useRef(null);
 
   useEffect(() => {
     if (user && !user.guide) {
@@ -33,7 +47,45 @@ function ModalSequence({ user }: { user: User }) {
     } else {
       setCurrentModal(-1);
     }
+    const handleNotificationsClickOutside = (event: any) => {
+      if (
+        notificationsDropdownRef.current &&
+        !(notificationsDropdownRef.current as HTMLElement).contains(
+          event.target
+        )
+      ) {
+        setIsNotificationsOpen(false);
+      }
+    };
+
+    const handleAccountClickOutside = (event: any) => {
+      if (
+        accountDropdownRef.current &&
+        !(accountDropdownRef.current as HTMLElement).contains(event.target)
+      ) {
+        setIsAccountOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleNotificationsClickOutside);
+    document.addEventListener("mousedown", handleAccountClickOutside);
+
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        handleNotificationsClickOutside
+      );
+      document.removeEventListener("mousedown", handleAccountClickOutside);
+    };
   }, [user]);
+
+  const toggleNotifications = () => {
+    setIsNotificationsOpen((prevValue) => !prevValue);
+  };
+
+  const toggleAccount = () => {
+    setIsAccountOpen((prevValue) => !prevValue);
+  };
 
   const handleNext = () => {
     setCurrentModal((prevModal) => prevModal + 1);
@@ -42,7 +94,6 @@ function ModalSequence({ user }: { user: User }) {
   const handleBack = () => {
     setCurrentModal((prevModal) => prevModal - 1);
   };
-
   const CurrentModal = modals[currentModal];
 
   return (
@@ -70,15 +121,57 @@ function ModalSequence({ user }: { user: User }) {
             <a>
               <h1 className="inline-block mr-4">200K Treidis</h1>
             </a>
-            <div className="mr-4">
+            <div className="mr-4 relative">
               <FontAwesomeIcon className="inline-block" icon={faBell} />
-              <a>
+              <a onClick={toggleNotifications}>
                 <h1 className="inline-block">Notificaciones</h1>
               </a>
+              {isNotificationsOpen && (
+                <div className="absolute top-10">
+                  <ul className="rounded bg-white">
+                    <li className="hover:bg-emerald-500 p-4 rounded hover:text-white">
+                      Solicitudes
+                    </li>
+                    <li className="hover:bg-emerald-500 p-4 rounded hover:text-white">
+                      Ofertas
+                    </li>
+                    <li className="hover:bg-emerald-500 p-4 rounded hover:text-white">
+                      Mensajes
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
+            <div className="mr-4 relative">
+              <a href="#" onClick={toggleAccount}>
+                <h1 className="inline-block">Mi cuenta</h1>
+              </a>
+              {isAccountOpen && (
+                <div className="absolute top-10">
+                  <ul className="rounded bg-white ">
+                    <li className="hover:bg-emerald-500 p-4 rounded hover:text-white">
+                      Mi cuenta
+                    </li>
+                    <li className="hover:bg-emerald-500 p-4 rounded hover:text-white">
+                      Mi perfil
+                    </li>
+                    <li className="hover:bg-emerald-500 p-4 rounded hover:text-white">
+                      Mis productos
+                    </li>
+                    <li className="hover:bg-emerald-500 p-4 rounded hover:text-white">
+                      Intercambios
+                    </li>
+                  </ul>
+                </div>
+              )}
             </div>
             <div className="mr-4">
-              <a href="">
-                <h1 className="inline-block">Mi cuenta</h1>
+              <a
+                className="bg-gradient-to-b from-emerald-500 to-emerald-700 rounded p-2 text-white"
+                href="#"
+                onClick={toggleAccount}
+              >
+                <h1 className="inline-block">Agregar producto</h1>
               </a>
             </div>
           </div>
@@ -141,26 +234,8 @@ function ModalSequence({ user }: { user: User }) {
       {currentModal !== -1 && (
         <>
           {/* Divs para renderizar cada modal */}
-          <div id="modal-0" className="relative">
-            {currentModal === 0 && CurrentModal && (
-              <CurrentModal
-                user={user}
-                onNext={handleNext}
-                onBack={handleBack}
-              />
-            )}
-          </div>
-          <div id="modal-1">
-            {currentModal === 1 && CurrentModal && (
-              <CurrentModal
-                user={user}
-                onNext={handleNext}
-                onBack={handleBack}
-              />
-            )}
-          </div>
-          <div id="modal-2">
-            {currentModal === 2 && CurrentModal && (
+          <div id={`modal-${currentModal}`} className="relative">
+            {currentModal >= 0 && currentModal <= 4 && CurrentModal && (
               <CurrentModal
                 user={user}
                 onNext={handleNext}
