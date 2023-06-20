@@ -1,6 +1,7 @@
 import LayoutSignIn from "@/layouts/LayoutSignIn";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import useLogin from "./hooks/useLogin";
 
 function Index() {
   const [error, setError] = useState("");
@@ -37,7 +38,7 @@ function Index() {
         if (response.status === 200) {
           const data = await response.json();
           setError("");
-          router.push("/home");
+          router.push("/home?loggedIn=true");
         }
         // La solicitud fue exitosa, puedes manejar la respuesta aquí
       } else {
