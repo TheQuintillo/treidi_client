@@ -1,7 +1,5 @@
-import React from "react";
-
 function Index() {
-  return <div>I</div>;
+  return <div>Result Search Bar</div>;
 }
 
 export default Index;
